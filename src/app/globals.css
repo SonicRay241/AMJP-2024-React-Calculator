@@ -10,5 +10,6 @@
 
 body {
   color: #000;
-  background: #fff
+  background: #fff;
+  min-height: 100vh;
 }
