@@ -5,8 +5,13 @@ import { useState, useRef, useEffect } from "react"
 
 const Home = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Calculator/>
+    <div className="w-screen h-screen">
+      <div className="absolute w-screen top-0 left-0 pt-40 text-gray-900 text-6xl text-center font-semibold">
+        <h1>Calculator</h1>
+      </div>
+      <div className="flex items-center justify-center h-screen w-screen absolute top-0 left-0">
+        <Calculator/>
+      </div>
     </div>
   )
 }
@@ -79,12 +84,22 @@ const Calculator = () => {
         break
 
       case "DEL":
+        const display = displayValue.replace(/.$/, "")
         if (calculatorState == "result") {
           setHistory([...history, result])
+          numberLeft = +display
           setCalculatorState("leftNum")
         }
-        const display = displayValue.replace(/.$/, "")
-        setDisplayValue(display == "" ? "0" : display)
+        if (calculatorState == "leftNum" || calculatorState == "rightNum") {
+          numberRight = +display
+          if (calculatorState == "leftNum") {
+            numberLeft = +display
+          }
+        }
+        if (calculatorState == "operation") {
+          setCalculatorState("leftNum")
+          setDisplayValue(numberLeft.toString())
+        } else setDisplayValue(display == "" ? "0" : display)
         break
 
       case "=":
@@ -97,6 +112,7 @@ const Calculator = () => {
 
       case "?":
         push("/support")
+        // toast("hi!")
         break
 
       default:
@@ -144,35 +160,19 @@ const Calculator = () => {
           operation = buttonValue as TCalcOperations
           setDisplayValue(buttonValue)
         }
-
         break
     }
-
-    // console.log(numberLeft);
-    // console.log(numberRight);
-    // console.log(operation);
   }
 
   const buttons: string[] = ["C", "DEL", "?", "/", "1", "2", "3", "x", "4", "5", "6", "-", "7", "8", "9", "+", "0", "="]
 
   useEffect(()=>{
-    // historyBottomElementRef.current?.scrollIntoView({
-    //   behavior: 'smooth',
-    //   block: 'nearest',
-    //   inline: 'center'
-    // })
-    // displayEnd.current?.scrollIntoView({
-    //   behavior: 'smooth',
-    //   block: 'nearest',
-    //   inline: 'center'
-    // })
-    // historyElementRef.current!.scrollTop -= historyElementRef.current!.clientWidth
     historyElementRef.current!.scrollTo(0, 32*history.length + 12)
     displayElementRef.current!.scrollLeft += displayElementRef.current!.clientWidth
   })
 
   return (
-    <div className="rounded-3xl shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] w-80">
+    <div className="rounded-3xl shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] w-80 text-white">
       <div className="bg-zinc-600 h-30 rounded-t-2xl">
         <div className="h-20 pt-4 px-4 text-2xl overflow-auto no-scrollbar" ref={historyElementRef}>
           {
@@ -184,7 +184,7 @@ const Calculator = () => {
         </div>
         
         {/* <h1>{calculatorState}</h1> */}
-        <div className="overflow-x-auto no-scrollbar px-4 pb-2" ref={displayElementRef}>
+        <div className="overflow-x-auto scrollbar-translucent px-4 pb-2" ref={displayElementRef}>
           <h1 className="text-end text-6xl">{displayValue}</h1>
         </div>
       </div>
@@ -199,7 +199,6 @@ const Calculator = () => {
     </div>
   )
 }
-
 
 const CalcButtonComponent = ({ value, callback, width, color }: TCalcButtonParam) => {
   let elementWidth = `col-span-1`

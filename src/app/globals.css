@@ -10,7 +10,7 @@
 }
 
 body {
-  color: #fff;
+  color: #000;
   background: #fff;
   min-height: 100vh;
 }
@@ -22,4 +22,33 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.scrollbar-translucent {
+  scrollbar-width: 12px;
+  scrollbar-color: #404040 #0000;
+}
+
+/* Chrome, Edge, and Safari */
+.scrollbar-translucent::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.scrollbar-translucent::-webkit-scrollbar-track {
+  background: #0000;
+}
+
+.scrollbar-translucent::-webkit-scrollbar-thumb {
+  background-color: #404040;
+  border-radius: 10px;
+  border: 1px solid #fff6;
+}
+
+.direction-rtl {
+  direction: rtl;
+}
+
+.direction-ltr {
+  direction: ltr;
 }
