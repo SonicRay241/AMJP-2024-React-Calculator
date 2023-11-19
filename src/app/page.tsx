@@ -1,11 +1,11 @@
 "use client"
 
 import { useRouter } from 'next/navigation';
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 
 const Home = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex items-center justify-center h-screen">
       <Calculator/>
     </div>
   )
@@ -33,6 +33,10 @@ const Calculator = () => {
   const [history, setHistory] = useState<string[]>([])
   const [calculatorState, setCalculatorState] = useState<TCalcState>("leftNum")
 
+  // const historyBottomElementRef = useRef<HTMLDivElement>(null)
+  const historyElementRef = useRef<HTMLDivElement>(null)
+  const displayElementRef = useRef<HTMLDivElement>(null)
+
   const createButton = (value: string, width: number = 1, color: TButtonColor = "gray") => {
     return { value: value, callback: () => { processCalcLogic(value) }, width: width, color }
   }
@@ -55,8 +59,6 @@ const Calculator = () => {
       case "/": 
         result = (+(numberLeft / numberRight)).toString()
         break
-
-        
 
       default:
         return "Err"
@@ -101,8 +103,11 @@ const Calculator = () => {
         if (numbers.includes(buttonValue)) {
           if (calculatorState == "result") {
             setHistory([...history, result])
+            console.log(`buttonValue = ${buttonValue}`);
+            
             setDisplayValue(buttonValue)
             numberLeft = +buttonValue
+            numberRight = +buttonValue
             setCalculatorState("leftNum")
           }
           if (calculatorState == "leftNum") {
@@ -110,16 +115,20 @@ const Calculator = () => {
             numberRight = +(displayValue+buttonValue)
             setDisplayValue(numberLeft.toString())
           }
-          if (calculatorState == "operation") setCalculatorState("rightNum")
-
-          if (operations.includes(displayValue[0]) && calculatorState == "operation") {
-            numberRight = +buttonValue
-            setDisplayValue(numberRight.toString())
-          } else {
+          if (calculatorState == "operation") {
+            setCalculatorState("rightNum")
+            if (operations.includes(displayValue[0])) {
+              numberRight = +buttonValue
+              setDisplayValue(numberRight.toString())
+            } else {
+              numberRight = +(displayValue+buttonValue)
+              setDisplayValue(numberRight.toString())
+            }
+          }
+          if (calculatorState == "rightNum") {
             numberRight = +(displayValue+buttonValue)
             setDisplayValue(numberRight.toString())
           }
-          
         }
         if (operations.includes(buttonValue)) {
           if (calculatorState == "leftNum") setCalculatorState("operation")
@@ -142,30 +151,48 @@ const Calculator = () => {
     // console.log(numberLeft);
     // console.log(numberRight);
     // console.log(operation);
-    
   }
 
   const buttons: string[] = ["C", "DEL", "?", "/", "1", "2", "3", "x", "4", "5", "6", "-", "7", "8", "9", "+", "0", "="]
 
+  useEffect(()=>{
+    // historyBottomElementRef.current?.scrollIntoView({
+    //   behavior: 'smooth',
+    //   block: 'nearest',
+    //   inline: 'center'
+    // })
+    // displayEnd.current?.scrollIntoView({
+    //   behavior: 'smooth',
+    //   block: 'nearest',
+    //   inline: 'center'
+    // })
+    // historyElementRef.current!.scrollTop -= historyElementRef.current!.clientWidth
+    historyElementRef.current!.scrollTo(0, 32*history.length + 12)
+    displayElementRef.current!.scrollLeft += displayElementRef.current!.clientWidth
+  })
+
   return (
-    <div className="rounded-3xl pb-4">
-      <div className="bg-zinc-600 h-30 rounded-t-3xl">
-        <div className="h-20 pt-4 px-4 text-2xl overflow-auto no-scrollbar">
+    <div className="rounded-3xl shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] w-80">
+      <div className="bg-zinc-600 h-30 rounded-t-2xl">
+        <div className="h-20 pt-4 px-4 text-2xl overflow-auto no-scrollbar" ref={historyElementRef}>
           {
-            history.map((value, _) => {
-              return <h1>{value}</h1>
+            history.map((value, key) => {
+              return <h1 key={key}>{value}</h1>
             })
           }
+          <div className="h-3"></div>
         </div>
         
         {/* <h1>{calculatorState}</h1> */}
-        <h1 className="text-end text-6xl px-4 pb-2">{displayValue}</h1>
+        <div className="overflow-x-auto no-scrollbar px-4 pb-2" ref={displayElementRef}>
+          <h1 className="text-end text-6xl">{displayValue}</h1>
+        </div>
       </div>
-      <div className="grid grid-cols-4 gap-4 relative w-80 h-96 bg-black p-4 rounded-b-3xl">
+      <div className="grid grid-cols-4 gap-4 relative w-80 h-96 bg-black p-4 rounded-b-2xl">
         {
           buttons.map((value, idx) => {
             const button: TCalcButtonParam = createButton(value, idx < 16 ? 1 : 2, ((idx+1) % 4 == 0 || idx == 17) ? "orange" : idx == 2 ? "brown" : "gray")
-            return <CalcButtonComponent value={button.value} callback={button.callback} width={button.width} color={button.color}/>
+            return <CalcButtonComponent key={idx} value={button.value} callback={button.callback} width={button.width} color={button.color}/>
           })
         }
       </div>
@@ -181,12 +208,12 @@ const CalcButtonComponent = ({ value, callback, width, color }: TCalcButtonParam
   }
   let btnColor: string
   switch (color) {
-    case "gray": btnColor = "bg-gray-500"; break
-    case "brown": btnColor = "bg-[#866242]"; break
-    case "orange": btnColor = "bg-amber-500"; break
+    case "gray": btnColor = "bg-gray-500 active:text-gray-500"; break
+    case "brown": btnColor = "bg-[#866242] active:text-[#866242]"; break
+    case "orange": btnColor = "bg-amber-500 active:text-amber-500"; break
   }
   return (
-      <button className={`${elementWidth} rounded-full text-xl ${btnColor}`} onClick={callback}>{value}</button>
+    <button className={`${elementWidth} rounded-full text-xl ${btnColor} active:bg-white`} onClick={callback}>{value}</button>
   )
 }
 
