@@ -33,8 +33,8 @@ const Calculator = () => {
   const [history, setHistory] = useState<string[]>([])
   const [calculatorState, setCalculatorState] = useState<TCalcState>("leftNum")
 
-  const historyElementRef = useRef<HTMLDivElement>(null)
-  const displayElementRef = useRef<HTMLDivElement>(null)
+  const historyElement = useRef<HTMLDivElement>(null)
+  const displayElement = useRef<HTMLDivElement>(null)
 
   const numberLeft = useRef(0)
   const numberRight = useRef(0)
@@ -72,7 +72,7 @@ const Calculator = () => {
     switch (buttonValue) {
       case "C":
         if (calculated.current) {
-          setHistory([...history, result.current])
+          if (result.current != "Err") setHistory([...history, result.current])
           calculated.current = false
         }
         setDisplayValue("0")
@@ -184,15 +184,20 @@ const Calculator = () => {
 
   const buttons: string[] = ["C", "DEL", "?", "/", "1", "2", "3", "x", "4", "5", "6", "-", "7", "8", "9", "+", "0", "="]
 
-  useEffect(()=>{
-    historyElementRef.current!.scrollTo(0, 32*history.length + 12)
-    displayElementRef.current!.scrollLeft += displayElementRef.current!.clientWidth
+  useEffect(() => {
+    try {
+      historyElement.current!.scrollTo(0, 32 * history.length + 12)
+      displayElement.current!.scrollLeft += displayElement.current!.clientWidth
+    } catch (e) {
+      console.log(e);
+      console.log("Failed to find element");
+    }
   })
 
   return (
     <div className="rounded-3xl shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] w-80 text-white">
-      <div className="bg-zinc-600 h-30 rounded-t-2xl">
-        <div className="h-20 pt-4 px-4 text-2xl overflow-auto no-scrollbar" ref={historyElementRef}>
+      <div className="bg-stone-600 h-30 rounded-t-2xl">
+        <div className="h-20 pt-4 px-4 text-2xl overflow-auto no-scrollbar" ref={historyElement}>
           {
             history.map((value, key) => {
               return <h1 key={key}>{value}</h1>
@@ -202,7 +207,7 @@ const Calculator = () => {
         </div>
         
         {/* <h1>{calculatorState}</h1> */}
-        <div className="overflow-x-auto scrollbar-translucent px-4 pb-2" ref={displayElementRef}>
+        <div className="overflow-x-auto scrollbar-translucent px-4 pb-2" ref={displayElement}>
           {/* <h1>{calculated.current ? "yes" : "no"}</h1> */}
           <h1 className="text-end text-6xl">{displayValue}</h1>
         </div>
@@ -221,12 +226,12 @@ const Calculator = () => {
 
 const CalcButtonComponent = ({ value, callback, width, color }: TCalcButtonParam) => {
   let elementWidth = `col-span-1`
-  if (width == 2) {
+  if (width > 1) {
     elementWidth = `col-span-2`
   }
   let btnColor: string
   switch (color) {
-    case "gray": btnColor = "bg-gray-500 active:text-gray-500"; break
+    case "gray": btnColor = "bg-[#a8a4a4] active:text-[#a8a4a4]"; break
     case "brown": btnColor = "bg-[#866242] active:text-[#866242]"; break
     case "orange": btnColor = "bg-amber-500 active:text-amber-500"; break
   }
