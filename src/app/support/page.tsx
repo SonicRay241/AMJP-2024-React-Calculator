@@ -17,13 +17,13 @@ const Page = () => {
                     <Form/>
                 </div>
             </div>
-            <button className="absolute top-4 left-3 flex items-center" onClick={()=>{ push("/") }}>
-                <span className="text-gray-800">
-                    <svg className="w-3 h-3 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
+            <button className="absolute top-4 left-3 flex items-center bg-white rounded-lg p-2 pr-3 shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] border-black border-2" onClick={()=>{ push("/") }}>
+                <span className="text-black">
+                    <svg className="w-3 h-3 text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 1 1.3 6.326a.91.91 0 0 0 0 1.348L7 13"/>
                     </svg>
                 </span>
-                <span className="text-lg ml-2">
+                <span className="text-lg ml-2 text-black">
                     Back
                 </span>
             </button>
@@ -131,8 +131,8 @@ const Form = () => {
     })
     return (
         <form className="" onSubmit={onSubmit}>
-            <div className="flex gap-12 mb-2">
-                <div className="w-96">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-12 mb-2">
+                <div className="w-96 lg:w-96 sm:w-72">
                     <h2 className="text-lg">Name<span className="text-red-600">*</span></h2>
                     <div className="flex gap-4 mb-2">
                         <div className="">
@@ -174,9 +174,9 @@ const Form = () => {
                         <label htmlFor="radioBug" className="text-sm">Bug</label>
                     </div>
                 </div>
-                <div className="w-96">
+                <div className="w-96 lg:w-96 sm:w-72">
                     <h2 className="text-lg">Description <sup className="text-gray-300">optional</sup></h2>
-                    <textarea name="description" id="description" placeholder="Description Report" className="bg-black resize-none border border-white focus:border-amber-500 rounded-md outline-none w-full h-72 p-2"
+                    <textarea name="description" id="description" placeholder="Description Report" className="bg-black resize-none border border-white focus:border-amber-500 rounded-md outline-none w-full h-32 sm:h-72 p-2"
                         value={descriptionValue}
                         onChange={(e) => { setDescriptionValue(e.target.value) }}
                     />
